@@ -1,0 +1,92 @@
+[gd_scene load_steps=11 format=3 uid="uid://cse2seb7g27nn"]
+
+[ext_resource type="Texture2D" uid="uid://c3pqmusen5g50" path="res://Textures/Enemy/kolbold_weak.png" id="1_ijq8d"]
+[ext_resource type="Script" path="res://Enemy/enemy.gd" id="1_u53ko"]
+[ext_resource type="PackedScene" uid="uid://cwqmy7ii6n6ob" path="res://Utility/hurt_box.tscn" id="3_ox0o4"]
+[ext_resource type="PackedScene" uid="uid://b6dq6tjdt8fn" path="res://Utility/hit_box.tscn" id="4_82sn1"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_j4b0m"]
+radius = 7.0
+height = 22.0
+
+[sub_resource type="Animation" id="Animation_t5abj"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_t35k1"]
+resource_name = "walk"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 1, 0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_g1y3v"]
+_data = {
+"RESET": SubResource("Animation_t5abj"),
+"walk": SubResource("Animation_t35k1")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wsh51"]
+size = Vector2(22, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w6lgn"]
+size = Vector2(16, 23)
+
+[node name="Enemy_Kobold_Weak" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_u53ko")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_ijq8d")
+hframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(2, 3)
+shape = SubResource("CapsuleShape2D_j4b0m")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_g1y3v")
+}
+
+[node name="HurtBox" parent="." instance=ExtResource("3_ox0o4")]
+visible = false
+collision_mask = 4
+
+[node name="CollisionShape2D" parent="HurtBox" index="0"]
+position = Vector2(1, 3)
+shape = SubResource("RectangleShape2D_wsh51")
+
+[node name="HitBox" parent="." instance=ExtResource("4_82sn1")]
+collision_layer = 2
+
+[node name="CollisionShape2D" parent="HitBox" index="0"]
+position = Vector2(2, 3.5)
+shape = SubResource("RectangleShape2D_w6lgn")
+
+[connection signal="hurt" from="HurtBox" to="." method="_on_hurt_box_hurt"]
+
+[editable path="HurtBox"]
+[editable path="HitBox"]
